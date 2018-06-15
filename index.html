@@ -31,48 +31,54 @@
   <script type="text/javascript">
 
       var sportArray = [""];
+      function showSportsArray() {
 
-      $("button").on("click", function() {
-      var sport = $(this).attr("data-sport");
-      var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
-        sport + "&api_key=6tnlx9e9Nfk9t3GUwvm2Ss6FG3Wjf75S&limit=10";
+        $("button").on("click", function() {
+          var sport = $(this).attr("data-sport");
+          var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
+          sport + "&api_key=6tnlx9e9Nfk9t3GUwvm2Ss6FG3Wjf75S&limit=10";
 
-      /////// AJAX //////
-      $.ajax({
-        url: queryURL,
-        method: "GET"
-      })
+        /////// AJAX //////
+          $.ajax({
+            url: queryURL,
+            method: "GET"
+          }).then(function(response) {
+            var results = response.data;
+            console.log(response);
+            ///// loop the results //////
+            for (var i = 0; i < results.length; i++) {
 
-        ///////// Data back from AJAX////////
-        .then(function(response) {
-          var results = response.data;
-          console.log(response);
-          ///// loop the results //////
-          for (var i = 0; i < results.length; i++){
+            //// Control the rating of GIFS displayed //////
+              if (results[i].rating !== "r" && results[i].rating !== "pg-13") {
+                var gifDiv = $("<div class='item'>");
+                var rating = results[i].rating;
+                var r = $("<p>").text("Rating: " + rating); ///paragraph displaying rating
 
-          //// Control the rating of GIFS displayed //////
-          if (results[i].rating !== "r" && results[i].rating !== "pg-13") {
-              var gifDiv = $("<div class='item'>");
-              var rating = results[i].rating;
-              var r = $("<p>").text("Rating: " + rating); ///paragraph displaying rating
+                ////// Title Display//////
+                var title = results[i].title;
+                var t = $("<p>").text("Title: " + title); ///paragraph displaying rating
 
-              ////// Title Display//////
-              var title = results[i].title;
-              var t = $("<p>").text("Title: " + title); ///paragraph displaying rating
+                ///// Image display //////
+                var image = $("<img>");
+                image.attr("src", results[i].images.fixed_height.url);
+                //// Animate or pause images /////
+                sportImage.attr("data-still", results[i].images.fixed_height_still.url);
+                sportImage.attr("data-animate", results[i].images.fixed_height.url);
+                sportImage.attr("data-state", "still");
+                sportImage.addClass('sportImage');
 
-              ///// Image display //////
-              var image = $("<img>");
-              image.attr("src", results[i].images.fixed_height.url);
-              gifDiv.append(t);
-              gifDiv.append(r);
-              gifDiv.append(image);
-            // Prepending the gifDiv to the "#gifs-appear-here" div in the HTML
-            $("#gifs-appear-here").prepend(gifDiv);
+                gifDiv.append(t);
+                gifDiv.append(r);
+                gifDiv.append(image);
+                // Prepending the gifDiv to the "#gifs-appear-here" div in the HTML
+                $("#gifs-appear-here").prepend(gifDiv);
+
+
               }
             }
+          });
         });
-     });
-
+      }
 
      </script>
 
