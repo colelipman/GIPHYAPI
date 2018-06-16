@@ -30,9 +30,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script type="text/javascript">
 
-      var sportArray = [""];
-      function showSportsArray() {
-
         $("button").on("click", function() {
           var sport = $(this).attr("data-sport");
           var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
@@ -56,16 +53,17 @@
 
                 ////// Title Display//////
                 var title = results[i].title;
-                var t = $("<p>").text("Title: " + title); ///paragraph displaying rating
+                var t = $("<p>").text("Title: " + title); ///paragraph displaying title
 
                 ///// Image display //////
                 var image = $("<img>");
                 image.attr("src", results[i].images.fixed_height.url);
+
                 //// Animate or pause images /////
-                sportImage.attr("data-still", results[i].images.fixed_height_still.url);
-                sportImage.attr("data-animate", results[i].images.fixed_height.url);
-                sportImage.attr("data-state", "still");
-                sportImage.addClass('sportImage');
+                image.attr("data-still", results[i].images.fixed_height_still.url);
+                image.attr("data-animate", results[i].images.fixed_height.url);
+                image.attr("data-state", "still");
+                image.addClass('image');
 
                 gifDiv.append(t);
                 gifDiv.append(r);
@@ -73,13 +71,10 @@
                 // Prepending the gifDiv to the "#gifs-appear-here" div in the HTML
                 $("#gifs-appear-here").prepend(gifDiv);
 
-
               }
             }
           });
         });
-      }
-
      </script>
 
     <script src="https://code.jquery.com/jquery.js"></script>
