@@ -14,8 +14,6 @@
 <body>
 
   <div id="buttonItems"></div>
-
-<!-- This is the form to add a space-themed button to the array. -->
 <form>
     <div class="row">
         <div class="col-md-3">
@@ -28,9 +26,8 @@
 <div id="title"></div>
 <div id="ratings"></div>
 
-<!-- Beginning of the javascript -->
 <script type="text/javascript">
-    // This is the initial array.
+    // initial array.
 	  var sports = ["basketball", "baseball", "soccer"];
     var sportsImage = "";
 // This function shows all the buttons at the top of the page.
@@ -47,15 +44,14 @@ function showButtons () {
     }
 }
 showButtons();
-// This runs when the user clicks "Make it so #1", it adds it to the button array and updates the buttons.
+// adds to the button array and updates the buttons.
 $("#addSportThing").on("click", function(event) {
     $("#entry").empty();
     event.preventDefault();
     var sportInput = $("#sport-input").val().trim();
     var sportTerm = $(this).attr("sport-name");
-    // Test area to make sure the user's button has at least 10 giphs for it.
-    // If there aren't 10, an error message will be shown and no button will be created.
-    var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + sportInput + "&limit=2&api_key=dc6zaTOxFJmzC";
+    // Test for at least 10 gifs .
+    var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + sportInput + "&limit=2&api_key=6tnlx9e9Nfk9t3GUwvm2Ss6FG3Wjf75S";
         $.ajax({ url: queryURL, method: "GET"}).done(function(response) {
         if (response.pagination.total_count >= 10) {
             sports.push(sportInput);
@@ -69,11 +65,11 @@ $("#addSportThing").on("click", function(event) {
 });
 $(document).on("click", ".sport", display);
 function display() {
-    //clear out any error message
+    //clear out error message
     $("#entry").empty();
     var sportTerm = $(this).attr("sport-name");
-    // The GIPHY query.  This limits to 10 results
-    var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + sportTerm + "&limit=10&api_key=dc6zaTOxFJmzC";
+    // GIPHY query.  This limits to 10 results
+    var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + sportTerm + "&limit=10&api_key=6tnlx9e9Nfk9t3GUwvm2Ss6FG3Wjf75S";
     $.ajax({ url: queryURL, method: "GET"}).done(function(response) {
         // This runs 10 times (limit is 10 in query) to show all the GIPHY pictures from the website's response.
         for (var j = 0; j < response.data.length; j++) {
@@ -86,16 +82,13 @@ function display() {
             var title = "Title: " + (response.data[j].title);
             // Creates the new img item
             var sportsImage = $("<img>");
-
-            // This changes the text color of ratings to green so it can be seen against the space background image.
-            $("#ratings").css("color", "green");
             // This creates a new div for the rating so that it maintains the gifs size
             var ratingDiv = $("<div id='ratingDiv'>" + rating + "</div>");
             $(ratingDiv).css({"text-align":"center", "font-size":"20px", "width":"200", "display":"block"});
             var titleDiv = $("<div id='titleDiv'>" + title + "</div>");
-            $(ratingDiv).css({"text-align":"center", "font-size":"20px", "width":"200", "display":"block"});
+            $(titleDiv).css({"text-align":"center", "font-size":"20px", "width":"200", "display":"block"});
             sportsImage.attr({"active":active, "still":still, "src":still, "state":"still"});
-            // This holds the new div for both rating and the image. Every image will have a rating on top of it.
+            // This holds the new div for both rating,title,image
             var newDiv = $("<div>");
             $(newDiv).css({"float":"left"});
             $(newDiv).prepend(titleDiv, ratingDiv, sportsImage);
