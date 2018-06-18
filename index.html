@@ -8,78 +8,114 @@
     <link rel="stylesheet" type="text/css" href="assets/style.css">
   <meta charset="utf-8">
   <title>GIPHY Homework Cole</title>
+  <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
 </head>
 
 <body>
-  <!-- search box -->
-  <div class="form-group">
-      <label id="searchform" for="search"> Search GIF: </label>
-      <input value="Search for your own GIFS here......" type="text" class="form-control" id="search-term">
-  </div>
-<!-- submit Button -->
-  <p> <button onclick="searchFunction()" type="submit" class="btn btn-default" id="run-search search-term">
-  <i class="fa fa-search"></i> Search</button>
-</p>
 
-<!-- pre-existing buttons -->
-  <button data-sport="basketball">Basketball</button>
-  <button data-sport="baseball">Baseball</button>
-  <button data-sport="soccer">Soccer</button>
-  <div id="gifs-appear-here"></div>
+  <div id="buttonItems"></div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script type="text/javascript">
+<!-- This is the form to add a space-themed button to the array. -->
+<form>
+    <div class="row">
+        <div class="col-md-3">
+            <input type="text" id="sport-input" class="form-control" placeholder="Add a sport.....">
+        </div>
+        <input id="addSportThing" type="submit" class="btn btn-success" value="Add a sport!">
+    </div>
+</form>
 
-        $("button").on("click", function() {
-          var sport = $(this).attr("data-sport");
-          var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
-          sport + "&api_key=6tnlx9e9Nfk9t3GUwvm2Ss6FG3Wjf75S&limit=10";
+<div id="title"></div>
+<div id="ratings"></div>
 
-        /////// AJAX //////
-          $.ajax({
-            url: queryURL,
-            method: "GET"
-          }).then(function(response) {
-            var results = response.data;
-            console.log(response);
-            ///// loop the results //////
-            for (var i = 0; i < results.length; i++) {
-
-            //// Control the rating of GIFS displayed //////
-              if (results[i].rating !== "r" && results[i].rating !== "pg-13") {
-                var gifDiv = $("<div class='item'>");
-                var rating = results[i].rating;
-                var r = $("<p>").text("Rating: " + rating); ///paragraph displaying rating
-
-                ////// Title Display//////
-                var title = results[i].title;
-                var t = $("<p>").text("Title: " + title); ///paragraph displaying title
-
-                ///// Image display //////
-                var image = $("<img>");
-                image.attr("src", results[i].images.fixed_height.url);
-
-                //// Animate or pause images /////
-                image.attr("data-still", results[i].images.fixed_height_still.url);
-                image.attr("data-animate", results[i].images.fixed_height.url);
-                image.attr("data-state", "still");
-                image.addClass('image');
-
-                gifDiv.append(t);
-                gifDiv.append(r);
-                gifDiv.append(image);
-                // Prepending the gifDiv to the "#gifs-appear-here" div in the HTML
-                $("#gifs-appear-here").prepend(gifDiv);
-
-              }
-            }
-          });
+<!-- Beginning of the javascript -->
+<script type="text/javascript">
+    // This is the initial array.
+	  var sports = ["basketball", "baseball", "soccer"];
+    var sportsImage = "";
+// This function shows all the buttons at the top of the page.
+function showButtons () {
+    $("#buttonItems").empty();
+    $("#sport-input").val("");
+    for (var i = 0; i < sports.length; i++) {
+        var button = $("<button class='btn btn-primary'>");
+        button.addClass("sport");
+        button.attr("sport-name", sports[i]);
+        button.text(sports[i]);
+        $("#buttonItems").append(button);
+        $("#buttonItems").append(" ");
+    }
+}
+showButtons();
+// This runs when the user clicks "Make it so #1", it adds it to the button array and updates the buttons.
+$("#addSportThing").on("click", function(event) {
+    $("#entry").empty();
+    event.preventDefault();
+    var sportInput = $("#sport-input").val().trim();
+    var sportTerm = $(this).attr("sport-name");
+    // Test area to make sure the user's button has at least 10 giphs for it.
+    // If there aren't 10, an error message will be shown and no button will be created.
+    var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + sportInput + "&limit=2&api_key=dc6zaTOxFJmzC";
+        $.ajax({ url: queryURL, method: "GET"}).done(function(response) {
+        if (response.pagination.total_count >= 10) {
+            sports.push(sportInput);
+            showButtons(); }
+        else if (response.pagination.total_count === 0) {
+            $("#entry").html(" Sorry, there were no results for this.  Please try again."); }
+        else if (response.pagination.total_count === 1) { $("#entry").html(" Sorry, there was only 1 result for this.  Please try again."); }
+        else { $("#entry").html(" Sorry, there were only " + response.pagination.total_count + " results for this.  Please try again."); }
+        $("#sport-input").val("");
         });
-     </script>
+});
+$(document).on("click", ".sport", display);
+function display() {
+    //clear out any error message
+    $("#entry").empty();
+    var sportTerm = $(this).attr("sport-name");
+    // The GIPHY query.  This limits to 10 results
+    var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + sportTerm + "&limit=10&api_key=dc6zaTOxFJmzC";
+    $.ajax({ url: queryURL, method: "GET"}).done(function(response) {
+        // This runs 10 times (limit is 10 in query) to show all the GIPHY pictures from the website's response.
+        for (var j = 0; j < response.data.length; j++) {
 
-    <script src="https://code.jquery.com/jquery.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
+            // Gets the animated gif URL
+            var active = response.data[j].images.fixed_width.url;
+            // Gets the still gif URL
+            var still = response.data[j].images.fixed_width_still.url;
+            var rating = "Rating: " + (response.data[j].rating).toUpperCase();
+            var title = "Title: " + (response.data[j].title);
+            // Creates the new img item
+            var sportsImage = $("<img>");
 
+            // This changes the text color of ratings to green so it can be seen against the space background image.
+            $("#ratings").css("color", "green");
+            // This creates a new div for the rating so that it maintains the gifs size
+            var ratingDiv = $("<div id='ratingDiv'>" + rating + "</div>");
+            $(ratingDiv).css({"text-align":"center", "font-size":"20px", "width":"200", "display":"block"});
+            var titleDiv = $("<div id='titleDiv'>" + title + "</div>");
+            $(ratingDiv).css({"text-align":"center", "font-size":"20px", "width":"200", "display":"block"});
+            sportsImage.attr({"active":active, "still":still, "src":still, "state":"still"});
+            // This holds the new div for both rating and the image. Every image will have a rating on top of it.
+            var newDiv = $("<div>");
+            $(newDiv).css({"float":"left"});
+            $(newDiv).prepend(titleDiv, ratingDiv, sportsImage);
+            // This adds the rating and image to the page.
+            $("#ratings").prepend(newDiv);
+            // When the user clicks on a picture, this will either start or stop the animation of that picture.
+            $(sportsImage).on("click", function(event) {
 
+                var state = $(this).attr("state");
+                var source = $(this).attr("src");
+                if (active === "active") {
+                $(this).attr("src", $(this).attr("still"));
+                $(this).attr("state", "still"); }
+                else {
+                $(this).attr("src", $(this).attr("active"));
+                $(this).attr("state", "active"); }
+            });
+        }
+   });
+}
+</script>
 </body>
 </html>
